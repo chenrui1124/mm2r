@@ -12,7 +12,7 @@ export function useIterate<T>(each: T[] | readonly T[], init: number = 0) {
         requestAnimationFrame ? requestAnimationFrame($next) : $next()
     }
 
-    function nextWith(run: (item?: T, index?: number) => void) {
+    function nextWith(run: (item: T, index: number) => void) {
         return () => {
             next()
             run(item.value, index.value)
