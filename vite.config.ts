@@ -30,6 +30,14 @@ export default defineConfig({
             name: 'MM2R',
             fileName: 'mm2r',
             formats: ['es']
+        },
+        rollupOptions: {
+            external: ['vue'],
+            output: {
+                globals: {
+                    vue: 'Vue'
+                }
+            }
         }
     }
 })
