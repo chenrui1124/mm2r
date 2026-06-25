@@ -19,13 +19,16 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json && api-extractor run --local --verbose && rimraf dist",
-    "fmt": "oxfmt"
+    "fmt": "oxfmt",
+    "release": "pnpm build && bumpp --commit \"v%s\" --no-push"
   },
   "dependencies": {
+    "solid-js": "^1.9.13",
     "vue": "^3.5.38"
   },
   "devDependencies": {
     "@microsoft/api-extractor": "^7.58.9",
+    "bumpp": "^11.1.0",
     "oxfmt": "^0.56.0",
     "rimraf": "^6.1.3",
     "typescript": "^6.0.3"
