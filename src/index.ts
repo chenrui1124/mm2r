@@ -43,3 +43,13 @@ export type ConcreteByKeys<T, K extends keyof T> = {
 } & {
   [P in Exclude<keyof T, K>]: T[P]
 }
+
+/**
+ * Require exactly one of the given keys, and forbid all others (set to `never`).
+ * Perfect for discriminated unions where only one variant should be present at a time.
+ *
+ * @public
+ */
+export type OnlyOneKey<T, Keys extends keyof T = keyof T> = Keys extends keyof T
+  ? Required<Pick<T, Keys>> & Partial<Record<Exclude<keyof T, Keys>, never>>
+  : never
