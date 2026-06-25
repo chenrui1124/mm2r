@@ -31,3 +31,15 @@ export type Equal<A, B> = [A] extends [B] ? ([B] extends [A] ? true : never) : n
  * @public
  */
 export type MaybeReadonly<T> = T | Readonly<T>
+
+/**
+ * Make specific keys concrete — required and stripped of `null` / `undefined`.
+ * Other keys stay as-is. Useful after runtime validation to assert the field is real.
+ *
+ * @public
+ */
+export type ConcreteByKeys<T, K extends keyof T> = {
+  [P in K]-?: NonNullable<T[P]>
+} & {
+  [P in Exclude<keyof T, K>]: T[P]
+}
