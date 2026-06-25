@@ -1,27 +1,32 @@
 {
-    "name": "mm2r",
-    "version": "0.2.0",
-    "files": [
-        "mm2r.d.ts"
-    ],
-    "type": "module",
-    "types": "mm2r.d.ts",
-    "description": "Typescript type utility library.",
-    "keywords": [
-        "Type utility library",
-        "Typescript",
-        "Types"
-    ],
-    "license": "MIT",
-    "scripts": {
-        "build": "tsc src/index.ts --declaration --emitDeclarationOnly --outdir dist && api-extractor run --local --verbose && rimraf dist"
-    },
-    "dependencies": {
-        "typescript": "^5.8.3",
-        "vue": "^3.5.13"
-    },
-    "devDependencies": {
-        "@microsoft/api-extractor": "^7.52.4",
-        "rimraf": "^6.0.1"
+  "name": "mm2r",
+  "version": "0.2.0",
+  "description": "Typescript type utility library.",
+  "keywords": [
+    "Type utility library",
+    "Types",
+    "Typescript"
+  ],
+  "license": "MIT",
+  "files": [
+    "mm2r.d.ts"
+  ],
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./mm2r.d.ts"
     }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json && api-extractor run --local --verbose && rimraf dist"
+  },
+  "dependencies": {
+    "vue": "^3.5.38"
+  },
+  "devDependencies": {
+    "@microsoft/api-extractor": "^7.58.9",
+    "oxfmt": "^0.56.0",
+    "rimraf": "^6.1.3",
+    "typescript": "^6.0.3"
+  }
 }
