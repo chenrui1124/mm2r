@@ -1,9 +1,23 @@
 {
-    "compilerOptions": {
-        "emitDeclarationOnly": true,
-        "declaration": true,
-        "outDir": "dist"
-    },
-    "references": [{ "path": "./tsconfig.node.json" }],
-    "include": ["src"]
+  "compilerOptions": {
+    "target": "esnext",
+    "lib": ["ESNext"],
+    "moduleDetection": "force",
+    "module": "preserve",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": false,
+    "strict": true,
+    "noUnusedLocals": true,
+    "allowImportingTsExtensions": false,
+    "declaration": true,
+    "esModuleInterop": true,
+    "erasableSyntaxOnly": true,
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "skipLibCheck": true,
+    "rootDir": "./src",
+    "declarationDir": "./dist",
+    "emitDeclarationOnly": true
+  },
+  "include": ["src", "test"]
 }
