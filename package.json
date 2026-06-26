@@ -1,6 +1,6 @@
 {
   "name": "mm2r",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Typescript type utility library.",
   "keywords": [
     "Type utility library",
