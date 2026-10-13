@@ -53,3 +53,12 @@ export type ConcreteByKeys<T, K extends keyof T> = {
 export type OnlyOneKey<T, Keys extends keyof T = keyof T> = Keys extends keyof T
   ? Required<Pick<T, Keys>> & Partial<Record<Exclude<keyof T, Keys>, never>>
   : never
+
+/**
+ * Get a union of the keys in `T` that can be omitted.
+ *
+ * @public
+ */
+export type OptionalKeys<T> = {
+  [K in keyof T]-?: {} extends Pick<T, K> ? K : never
+}[keyof T]
