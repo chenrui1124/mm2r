@@ -62,3 +62,10 @@ export type OnlyOneKey<T, Keys extends keyof T = keyof T> = Keys extends keyof T
 export type OptionalKeys<T> = {
   [K in keyof T]-?: {} extends Pick<T, K> ? K : never
 }[keyof T]
+
+/**
+ * Get a union of the keys in `T` that must be present.
+ *
+ * @public
+ */
+export type RequiredKeys<T> = Exclude<keyof T, OptionalKeys<T>>
