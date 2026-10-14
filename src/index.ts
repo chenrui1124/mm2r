@@ -104,3 +104,24 @@ export type RequiredKeys<T> = Exclude<keyof T, OptionalKeys<T>>
  */
 export type IsAny<T> = 0 extends 1 & T ? true : false
 //#endregion
+
+//#region ReadonlyKeys
+type IsReadonly<T> =
+  (<U>() => U extends T ? true : false) extends <U>() => U extends Readonly<T> ? true : false
+    ? true
+    : false
+
+/**
+ * Extract shallow readonly keys from object types, including public class members and getter-only properties.
+ * A readonly property value does not make the property itself readonly.
+ *
+ * Unions inspect only shared keys; a key can be readonly in just one branch.
+ * Index signatures may obscure individual properties. Arrays and tuples are unsupported.
+ *
+ * @since 0.4.0
+ * @public
+ */
+export type ReadonlyKeys<T> = {
+  [K in keyof T]-?: IsReadonly<Pick<T, K>> extends true ? K : never
+}[keyof T]
+//#endregion
