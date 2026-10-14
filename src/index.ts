@@ -125,3 +125,113 @@ export type ReadonlyKeys<T> = {
   [K in keyof T]-?: IsReadonly<Pick<T, K>> extends true ? K : never
 }[keyof T]
 //#endregion
+
+//#region KeepType
+declare const keepType: unique symbol
+
+/**
+ * A marker for `OverrideDocs`: replace a property's documentation while keeping its original type.
+ * Only meaningful inside an `OverrideDocs` documentation shape.
+ *
+ * @since 0.4.0
+ * @public
+ */
+export type KeepType = typeof keepType
+//#endregion
+
+//#region OverrideDocs
+type DocLeaf =
+  | Function
+  | readonly unknown[]
+  | Date
+  | RegExp
+  | Error
+  | PromiseLike<unknown>
+  | ReadonlyMap<unknown, unknown>
+  | ReadonlySet<unknown>
+  | WeakMap<WeakKey, unknown>
+  | WeakSet<WeakKey>
+  | ArrayBufferLike
+  | ArrayBufferView
+
+type IsDocObject<T> =
+  IsAny<T> extends true
+    ? false
+    : [T] extends [never]
+      ? false
+      : T extends object
+        ? T extends DocLeaf
+          ? false
+          : { [K in keyof T]: T[K] } extends T
+            ? true
+            : false
+        : false
+
+// Exclude index signatures, including template literal patterns.
+type DeclaredProperties<T> = {
+  [K in keyof T as {} extends Record<K, never> ? never : K]: T[K]
+}
+
+type UnionKeys<T> = T extends unknown ? keyof DeclaredProperties<T> : never
+
+type UnionValue<T, K extends PropertyKey> = T extends unknown ? T[Extract<K, keyof T>] : never
+
+type DocShape<T> =
+  IsDocObject<T> extends true
+    ? { [K in UnionKeys<T>]?: KeepType | DocShape<NonNullable<UnionValue<T, K>>> }
+    : never
+
+// Reject extra keys at every depth, even when valid keys are also present.
+type ValidateDocs<T, D> = {
+  [K in keyof D]: K extends UnionKeys<T> ? ValidateDocValue<UnionValue<T, K>, D[K]> : never
+}
+
+type ValidateDocValue<T, D> = D extends KeepType | undefined
+  ? D
+  : IsDocObject<NonNullable<T>> extends true
+    ? ValidateDocs<NonNullable<T>, D>
+    : never
+
+type ResolveDoc<T, D> = [Exclude<D, undefined>] extends [KeepType]
+  ? T
+  : T extends object
+    ? OverrideDocObject<T, Exclude<D, undefined>>
+    : T
+
+// Take JSDoc from D and value types from T; restore T's modifiers separately.
+type DocProperties<T, D> = {
+  -readonly [K in keyof D]-?: ResolveDoc<Required<T>[K & keyof T], D[K]>
+}
+
+type WithDocModifiers<T, D> = Pick<D, Extract<Exclude<RequiredKeys<T>, ReadonlyKeys<T>>, keyof D>> &
+  Readonly<Pick<D, Extract<RequiredKeys<T> & ReadonlyKeys<T>, keyof D>>> &
+  Partial<Pick<D, Extract<Exclude<OptionalKeys<T>, ReadonlyKeys<T>>, keyof D>>> &
+  Readonly<Partial<Pick<D, Extract<OptionalKeys<T> & ReadonlyKeys<T>, keyof D>>>>
+
+// Unlike Omit, this retains explicit properties alongside index signatures.
+type UndocumentedProperties<T, D> = {
+  [K in keyof T as K extends keyof D ? never : K]: T[K]
+}
+
+type OverrideDocObject<T, D> = T extends unknown
+  ? Extract<keyof D, keyof T> extends never
+    ? T
+    : UndocumentedProperties<T, D> &
+        WithDocModifiers<Pick<T, Extract<keyof D, keyof T>>, DocProperties<T, D>>
+  : never
+
+/**
+ * Replace property JSDoc using `D`, preserving types and modifiers.
+ * Use `KeepType` for a property or a nested object to update its children's docs.
+ *
+ * Only public object shapes are accepted at the root. Functions, arrays, tuples,
+ * common built-ins, and classes with private/protected members require `KeepType`.
+ * Unions containing these leaves or non-nullish primitives also require `KeepType`.
+ * Index signatures cannot be documented. Public-only classes are treated as object shapes.
+ *
+ * @since 0.4.0
+ * @public
+ */
+export type OverrideDocs<T extends object, D extends object & DocShape<T> & ValidateDocs<T, D>> =
+  IsAny<D> extends true ? T : [D] extends [never] ? T : OverrideDocObject<T, D>
+//#endregion
